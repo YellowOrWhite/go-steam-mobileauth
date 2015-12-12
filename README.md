@@ -1,4 +1,4 @@
-[![GoDoc](http://godoc.org/github.com/YellowOrWhite/go-steam-mobileauth?status.png)](https://github.com/YellowOrWhite/go-steam-mobileauth)
+[![GoDoc](http://godoc.org/github.com/YellowOrWhite/go-steam-mobileauth?status.png)](http://godoc.org/github.com/YellowOrWhite/go-steam-mobileauth)
 
 A Go library that provides Steam Mobile Authenticator functionality
 
