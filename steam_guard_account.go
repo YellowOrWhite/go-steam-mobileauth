@@ -110,7 +110,7 @@ func (a *SteamGuardAccount) FetchConfirmations() ([]*Confirmation, error) {
 	cookies, _ := cookiejar.New(nil)
 	a.Session.AddCookies(cookies)
 
-	respBody, err := WebRequest(UrlConfirmationService, "GET", &queryParams, cookies, nil, nil)
+	respBody, err := WebRequest(UrlConfirmationService+"/conf", "GET", &queryParams, cookies, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -195,9 +195,9 @@ func (a *SteamGuardAccount) _sendConfirmationAjax(cn *Confirmation, op string) e
 	a.Session.AddCookies(cookies)
 
 	// TODO: do we need this???
-	//referer := urlConfirmationService
+	//referer := urlConfirmationService + "/conf"
 
-	respBody, err := WebRequest(UrlConfirmationService, "GET", &queryParams, cookies, nil, nil)
+	respBody, err := WebRequest(UrlConfirmationService+"/ajaxop", "GET", &queryParams, cookies, nil, nil)
 	if err != nil {
 		return err
 	}
