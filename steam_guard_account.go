@@ -32,7 +32,7 @@ type SteamGuardAccount struct {
 	DeviceID       string `json:"device_id"`
 	// Set to true if the authenticator has actually been applied to the account.
 	FullyEnrolled bool         `json:"fully_enrolled"`
-	Session       *SessionData `json:"-"`
+	Session       *SessionData `json:"session"`
 }
 
 func (a *SteamGuardAccount) DeactivateAuthenticator() error {
