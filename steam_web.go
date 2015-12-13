@@ -11,14 +11,8 @@ import (
 )
 
 // Perform a mobile login request
-// params:
-//		queryUrl	API url
-//		method		GET or POST
-//		params		Query params
-//		cookies		Current cookie container
-// returns:
-//		response body
-//		error
+// Method must be GET or POST
+// Returns response body
 func MobileLoginRequest(queryUrl, method string, params *url.Values, cookies *cookiejar.Jar, headers *map[string]string) ([]byte, error) {
 	referer := UrlCommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client"
 	return WebRequest(queryUrl, method, params, cookies, headers, &referer)

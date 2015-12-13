@@ -15,13 +15,28 @@ import (
 	"time"
 )
 
+// ErrBadRSA is returned by DoLogin
+// when steam returns success false to rsa public key request
 var ErrBadRSA = errors.New("bad RSA")
+
+// ErrBadCredentials is returned by DoLogin
+// when steam fails to authenticate us
 var ErrBadCredentials = errors.New("bad credentials")
+
+// ErrNeedCaptcha is returned by DoLogin
+// when captcha code is required
 var ErrNeedCaptcha = errors.New("need captcha")
+
+// ErrNeed2FA is returned by DoLogin
+// when mobile code is required
 var ErrNeed2FA = errors.New("need 2FA")
+
+// ErrNeedEmail is returned by DoLogin
+// when email code is required
 var ErrNeedEmail = errors.New("need email")
 
-// Handles logging the user into the mobile Steam website. Necessary to generate OAuth token and session cookies.
+// Handles logging the user into the mobile Steam website.
+// Necessary to generate OAuth token and session cookies.
 type UserLogin struct {
 	Username string
 	Password string

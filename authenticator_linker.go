@@ -12,21 +12,32 @@ import (
 	"strconv"
 )
 
-// Only returned by AddAuthenticator()
+// ErrMustProvidePhoneNumber is returned by AddAuthenticator
+// when no phone set on both authentication linker and account
 var ErrMustProvidePhoneNumber = errors.New("no phone number on the account")
+
+// ErrMustRemovePhoneNumber is returned by AddAuthenticator
+// when phone is set on both authentication linker and account
 var ErrMustRemovePhoneNumber = errors.New("a phone number is already on the account")
 
-// Only returned by FinalizeAddAuthenticator()
+// ErrBadSMSCode is returned by FinalizeAddAuthenticator
+// when steam rejects supplied SMS code
 var ErrBadSMSCode = errors.New("bad sms code")
+
+// ErrUnableToGenerateCorrectCodes is returned by FinalizeAddAuthenticator
 var ErrUnableToGenerateCorrectCodes = errors.New("unable to generate correct codes")
 
 // Handles the linking process for a new mobile authenticator
 type AuthenticatorLinker struct {
-	// Set to register a new phone number when linking. If a phone number is not set on the account, this must be set. If a phone number is set on the account, this must be null.
+	// Set to register a new phone number when linking.
+	// If a phone number is not set on the account, this must be set.
+	// If a phone number is set on the account, this must be null.
 	PhoneNumber string
 	// Randomly-generated device ID. Should only be generated once per linker.
 	DeviceID string
-	// After the initial link step, if successful, this will be the SteamGuard data for the account. PLEASE save this somewhere after generating it; it's vital data.
+	// After the initial link step, if successful, this will be
+	// the SteamGuard data for the account. PLEASE save this somewhere
+	// after generating it; it's vital data.
 	LinkedAccount *SteamGuardAccount
 	// True if the authenticator has been fully finalized.
 	finalized bool

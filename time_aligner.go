@@ -8,9 +8,6 @@ import (
 	"time"
 )
 
-// Aligns system time with the Steam server time. Not super advanced; probably not taking some things into account that it should.
-// Necessary to generate up-to-date codes. In general, this will have an error of less than a second, assuming Steam is operational.
-
 var _isTimeAligned bool
 var _steamTimeDifference int64
 
@@ -21,10 +18,14 @@ func GetSteamTime() int64 {
 	return time.Now().Unix() + _steamTimeDifference
 }
 
+// Aligns system time with the Steam server time. Not super advanced;
+// probably not taking some things into account that it should.
+// Necessary to generate up-to-date codes. In general, this will have an error
+// of less than a second, assuming Steam is operational.
 func AlignTime() error {
 	now := time.Now().Unix()
 	client := new(http.Client)
-	resp, err := client.Post(UrlTwoFactorTimeQuery, "application/x-www-form-urlencoded", bytes.NewBuffer([]byte("steamid=0")))
+	resp, err := client.Post(UrlTwoFactorService+"/QueryTime/v0001", "application/x-www-form-urlencoded", bytes.NewBuffer([]byte("steamid=0")))
 	if err != nil {
 		return err
 	}

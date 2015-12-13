@@ -42,7 +42,7 @@ func (a *SteamGuardAccount) DeactivateAuthenticator() error {
 	postData.Set("revocation_code", a.RevocationCode)
 	postData.Set("access_token", a.Session.OAuthToken)
 
-	respBody, err := MobileLoginRequest(UrlSteamApiBase+"/ITwoFactorService/RemoveAuthenticator/v0001", "POST", &postData, nil, nil)
+	respBody, err := MobileLoginRequest(UrlTwoFactorService+"/RemoveAuthenticator/v0001", "POST", &postData, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,8 @@ func (a *SteamGuardAccount) GenerateSteamGuardCodeForTime(t int64) (string, erro
 	hmacGenerator.Write(timeBytes)
 	mac := hmacGenerator.Sum(nil)
 
-	// the last 4 bits of the mac say where the code starts (e.g. if last 4 bit are 1100, we start at byte 12)
+	// the last 4 bits of the mac say where the code starts
+	// (e.g. if last 4 bit are 1100, we start at byte 12)
 	start := int(mac[19] & 0x0f)
 
 	// extract code - 4 bytes
@@ -162,7 +163,7 @@ func (a *SteamGuardAccount) RefreshSession() error {
 	postData := url.Values{}
 	postData.Set("access_token", a.Session.OAuthToken)
 
-	respBody, err := WebRequest(UrlMobileAuthGetWGToken, "POST", &postData, nil, nil, nil)
+	respBody, err := WebRequest(UrlMobileAuthService+"/GetWGToken/v0001", "POST", &postData, nil, nil, nil)
 	if err != nil {
 		return err
 	}
