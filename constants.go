@@ -7,7 +7,6 @@ import (
 // Cookie path
 var cookiePath, _ = url.Parse("https://steamcommunity.com/")
 
-// API endpoints
 const UrlSteamApiBase string = "https://api.steampowered.com"
 const UrlCommunityBase string = "https://steamcommunity.com"
 const UrlConfirmationService string = UrlCommunityBase + "/mobileconf"
