@@ -219,7 +219,7 @@ type loginResponse struct {
 	LoginComplete   bool         `json:"login_complete"`
 	OAuth           *oAuthResult `json:"oauth"`
 	CaptchaNeeded   bool         `json:"captcha_needed"`
-	CaptchaGID      UniStr       `json:"captcha_gid"`
+	CaptchaGID      uniStr       `json:"captcha_gid"`
 	EmailSteamID    uint64       `json:"emailsteamid,string"`
 	EmailAuthNeeded bool         `json:"emailauth_needed"`
 	TwoFactorNeeded bool         `json:"requires_twofactor"`
