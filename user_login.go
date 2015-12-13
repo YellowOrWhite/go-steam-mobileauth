@@ -93,7 +93,7 @@ func (ul *UserLogin) DoLogin() error {
 		return err
 	}
 
-	r := RSAResponse{}
+	r := rsaResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (ul *UserLogin) DoLogin() error {
 	}
 
 	// Process response
-	r2 := LoginResponse{}
+	r2 := loginResponse{}
 	if err = json.Unmarshal(respBody, &r2); err != nil {
 		return err
 	}
@@ -167,15 +167,21 @@ func (ul *UserLogin) DoLogin() error {
 		ul.RequiresCaptcha = true
 		ul.CaptchaGID = r2.CaptchaGID.String()
 		return ErrNeedCaptcha
+	} else {
+		ul.RequiresCaptcha = false
 	}
 	if r2.EmailAuthNeeded {
 		ul.RequiresEmail = true
 		ul.SteamID = r2.EmailSteamID
 		return ErrNeedEmail
+	} else {
+		ul.RequiresEmail = false
 	}
 	if r2.TwoFactorNeeded && !r2.Success {
 		ul.Requires2FA = true
 		return ErrNeed2FA
+	} else {
+		ul.Requires2FA = false
 	}
 	if !r2.LoginComplete {
 		return ErrBadCredentials
@@ -208,10 +214,10 @@ func (ul *UserLogin) DoLogin() error {
 	return nil
 }
 
-type LoginResponse struct {
+type loginResponse struct {
 	Success         bool         `json:"success"`
 	LoginComplete   bool         `json:"login_complete"`
-	OAuth           *OAuthResult `json:"oauth"`
+	OAuth           *oAuthResult `json:"oauth"`
 	CaptchaNeeded   bool         `json:"captcha_needed"`
 	CaptchaGID      UniStr       `json:"captcha_gid"`
 	EmailSteamID    uint64       `json:"emailsteamid,string"`
@@ -219,7 +225,7 @@ type LoginResponse struct {
 	TwoFactorNeeded bool         `json:"requires_twofactor"`
 }
 
-type OAuthResult struct {
+type oAuthResult struct {
 	SteamID          uint64 `json:"steamid,string"`
 	OAuthToken       string `json:"oauth_token"`
 	SteamLogin       string `json:"wgtoken"`
@@ -227,7 +233,7 @@ type OAuthResult struct {
 	Webcookie        string `json:"webcookie"`
 }
 
-func (o *OAuthResult) UnmarshalJSON(data []byte) error {
+func (o *oAuthResult) UnmarshalJSON(data []byte) error {
 	// no oauth data
 	if len(data) < 4 {
 		return nil
@@ -238,7 +244,7 @@ func (o *OAuthResult) UnmarshalJSON(data []byte) error {
 		return errors.New("failed to unquote oauth data")
 	}
 	// unmarshal
-	type Alias OAuthResult
+	type Alias oAuthResult
 	aux := (*Alias)(o)
 	if err = json.Unmarshal([]byte(unquotedData), &aux); err != nil {
 		return err
@@ -246,7 +252,7 @@ func (o *OAuthResult) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type RSAResponse struct {
+type rsaResponse struct {
 	Success   bool   `json:"success"`
 	Exponent  string `json:"publickey_exp"`
 	Modulus   string `json:"publickey_mod"`
