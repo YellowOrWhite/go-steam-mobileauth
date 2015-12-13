@@ -214,6 +214,9 @@ func (a *SteamGuardAccount) _sendConfirmationAjax(cn *Confirmation, op string) e
 }
 
 func (a *SteamGuardAccount) GenerateConfirmationQueryParams(tag string) url.Values {
+	if a.DeviceID == "" {
+		a.DeviceID = generateDeviceID()
+	}
 	t := GetSteamTime()
 	queryParams := url.Values{}
 	queryParams.Set("p", a.DeviceID)

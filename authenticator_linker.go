@@ -20,6 +20,9 @@ var ErrMustProvidePhoneNumber = errors.New("no phone number on the account")
 // when phone is set on both authentication linker and account
 var ErrMustRemovePhoneNumber = errors.New("a phone number is already on the account")
 
+// ErrAuthenticatorPresent is returned by AddAuthenticator
+var ErrAuthenticatorPresent = errors.New("authenticator already present")
+
 // ErrBadSMSCode is returned by FinalizeAddAuthenticator
 // when steam rejects supplied SMS code
 var ErrBadSMSCode = errors.New("bad sms code")
@@ -51,7 +54,7 @@ func NewAuthenticatorLinker(session *SessionData) *AuthenticatorLinker {
 	session.AddCookies(cookies)
 
 	return &AuthenticatorLinker{
-		DeviceID: _generateDeviceID(),
+		DeviceID: generateDeviceID(),
 		_session: session,
 		_cookies: cookies,
 	}
@@ -89,8 +92,14 @@ func (al *AuthenticatorLinker) AddAuthenticator() error {
 	if err := json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
-	if r.Response == nil || r.Response.Status != 1 {
+	if r.Response == nil {
 		return errors.New("malformed json response")
+	}
+	if r.Response.Status == 29 {
+		return ErrAuthenticatorPresent
+	}
+	if r.Response.Status != 1 {
+		return fmt.Errorf("authenticator response status: %v\n", r.Response.Status)
 	}
 
 	al.LinkedAccount = r.Response
@@ -227,7 +236,7 @@ type addPhoneResponse struct {
 	Success bool
 }
 
-func _generateDeviceID() string {
+func generateDeviceID() string {
 	// Generate 8 random bytes
 	b := make([]byte, 8)
 	if _, err := rand.Read(b); err != nil {

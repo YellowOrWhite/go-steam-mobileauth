@@ -7,11 +7,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math/big"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,6 +36,9 @@ var ErrNeed2FA = errors.New("need 2FA")
 // ErrNeedEmail is returned by DoLogin
 // when email code is required
 var ErrNeedEmail = errors.New("need email")
+
+// ErrNeedTooManyFailedLogins is returned by DoLogin
+var ErrTooManyFailedLogins = errors.New("two many failed logins")
 
 // Handles logging the user into the mobile Steam website.
 // Necessary to generate OAuth token and session cookies.
@@ -107,10 +112,9 @@ func (ul *UserLogin) DoLogin() error {
 	if err != nil {
 		return err
 	}
-
 	r := rsaResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal rsa response: %v", err)
 	}
 	if !r.Success {
 		return ErrBadRSA
@@ -178,6 +182,9 @@ func (ul *UserLogin) DoLogin() error {
 	if err = json.Unmarshal(respBody, &r2); err != nil {
 		return err
 	}
+	if r2.Message != "" && strings.Contains(r2.Message, "Incorrect login") {
+		return ErrBadCredentials
+	}
 	if r2.CaptchaNeeded {
 		ul.RequiresCaptcha = true
 		ul.CaptchaGID = r2.CaptchaGID.String()
@@ -197,6 +204,9 @@ func (ul *UserLogin) DoLogin() error {
 		return ErrNeed2FA
 	} else {
 		ul.Requires2FA = false
+	}
+	if r2.Message != "" && strings.Contains(r2.Message, "too many login failures") {
+		return ErrTooManyFailedLogins
 	}
 	if !r2.LoginComplete {
 		return ErrBadCredentials
@@ -238,6 +248,7 @@ type loginResponse struct {
 	EmailSteamID    uint64       `json:"emailsteamid,string"`
 	EmailAuthNeeded bool         `json:"emailauth_needed"`
 	TwoFactorNeeded bool         `json:"requires_twofactor"`
+	Message         string       `json"message"`
 }
 
 type oAuthResult struct {
