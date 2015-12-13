@@ -33,7 +33,7 @@ func AlignTime() error {
 	if err != nil {
 		return err
 	}
-	r := TimeQueryResponse{}
+	r := timeQueryResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -42,10 +42,10 @@ func AlignTime() error {
 	return nil
 }
 
-type TimeQueryResponse struct {
-	Response *TimeQueryResult `json:"response"`
+type timeQueryResponse struct {
+	Response *timeQueryResult `json:"response"`
 }
 
-type TimeQueryResult struct {
+type timeQueryResult struct {
 	ServerTime int64 `json:"server_time,string"`
 }

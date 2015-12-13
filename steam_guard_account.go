@@ -46,7 +46,7 @@ func (a *SteamGuardAccount) DeactivateAuthenticator() error {
 	if err != nil {
 		return err
 	}
-	r := RemoveAuthenticatorResponse{}
+	r := removeAuthenticatorResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func (a *SteamGuardAccount) RefreshSession() error {
 		return err
 	}
 
-	r := RefreshSessionDataResponse{}
+	r := refreshSessionDataResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func (a *SteamGuardAccount) _sendConfirmationAjax(cn *Confirmation, op string) e
 		return err
 	}
 
-	r := SendConfirmationResponse{}
+	r := sendConfirmationResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -248,23 +248,23 @@ func (a *SteamGuardAccount) _generateConfirmationHashForTime(t int64, tag string
 	return base64.StdEncoding.EncodeToString(mac)
 }
 
-type RefreshSessionDataResponse struct {
-	Response *RefreshSessionDataResult `json:"response"`
+type refreshSessionDataResponse struct {
+	Response *refreshSessionDataResult `json:"response"`
 }
 
-type RefreshSessionDataResult struct {
+type refreshSessionDataResult struct {
 	Token       string `json:"token"`
 	TokenSecure string `json:"token_secure"`
 }
 
-type RemoveAuthenticatorResponse struct {
-	Response *RemoveAuthenticatorResult `json:"response"`
+type removeAuthenticatorResponse struct {
+	Response *removeAuthenticatorResult `json:"response"`
 }
 
-type RemoveAuthenticatorResult struct {
+type removeAuthenticatorResult struct {
 	Success bool `json:"success"`
 }
 
-type SendConfirmationResponse struct {
+type sendConfirmationResponse struct {
 	Success bool `json:"success"`
 }

@@ -74,7 +74,7 @@ func (al *AuthenticatorLinker) AddAuthenticator() error {
 	}
 
 	// Unmarshal response
-	r := AddAuthenticatorResponse{}
+	r := addAuthenticatorResponse{}
 	if err := json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (al *AuthenticatorLinker) FinalizeAddAuthenticator(smsCode string) error {
 			return err
 		}
 
-		r := FinalizeAuthenticatorResponse{}
+		r := finalizeAuthenticatorResponse{}
 		if err := json.Unmarshal(respBody, &r); err != nil {
 			return err
 		}
@@ -164,7 +164,7 @@ func (al *AuthenticatorLinker) _addPhoneNumber() error {
 		return err
 	}
 
-	r := AddPhoneResponse{}
+	r := addPhoneResponse{}
 	if err := json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (al *AuthenticatorLinker) _hasPhoneAttached() (bool, error) {
 		return false, err
 	}
 
-	r := HasPhoneResponse{}
+	r := hasPhoneResponse{}
 	if err := json.Unmarshal(respBody, &r); err != nil {
 		return false, err
 	}
@@ -193,26 +193,26 @@ func (al *AuthenticatorLinker) _hasPhoneAttached() (bool, error) {
 	return r.HasPhone, nil
 }
 
-type AddAuthenticatorResponse struct {
+type addAuthenticatorResponse struct {
 	Response *SteamGuardAccount
 }
 
-type FinalizeAuthenticatorResponse struct {
-	Response *FinalizeAuthenticatorResult
+type finalizeAuthenticatorResponse struct {
+	Response *finalizeAuthenticatorResult
 }
 
-type FinalizeAuthenticatorResult struct {
+type finalizeAuthenticatorResult struct {
 	Status     int32
 	ServerTime int64 `json:"server_time,string"`
 	WantMore   bool  `json:"want_more"`
 	Success    bool
 }
 
-type HasPhoneResponse struct {
+type hasPhoneResponse struct {
 	HasPhone bool `json:"has_phone"`
 }
 
-type AddPhoneResponse struct {
+type addPhoneResponse struct {
 	Success bool
 }
 
