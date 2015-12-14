@@ -245,5 +245,13 @@ func generateDeviceID() string {
 	// Generate sha1 hash
 	hasher := sha1.New()
 	hasher.Write(b)
-	return "android:" + hex.EncodeToString(hasher.Sum(nil))
+	deviceId := make([]byte, 40)
+	hex.Encode(deviceId, hasher.Sum(nil))
+	deviceId = deviceId[:32]
+	// Insert "-" at 8,12,16,20 positions
+	for i, pos := range []int{8, 12, 16, 20} {
+		deviceId = append(deviceId[0:pos+i],
+			append([]byte{'-'}, deviceId[pos+i:]...)...)
+	}
+	return "android:" + string(deviceId)
 }
