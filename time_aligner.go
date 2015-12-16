@@ -3,6 +3,7 @@ package mobileauth
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -37,6 +38,9 @@ func AlignTime() error {
 	r := timeQueryResponse{}
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
+	}
+	if r.Response == nil {
+		return errors.New("steam returned empty time query response")
 	}
 	_steamTimeDifference = r.Response.ServerTime - now
 	_isTimeAligned = true

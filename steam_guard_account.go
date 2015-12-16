@@ -50,7 +50,10 @@ func (a *SteamGuardAccount) DeactivateAuthenticator() error {
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
-	if r.Response == nil || !r.Response.Success {
+	if r.Response == nil {
+		return errors.New("steam returned empty remove authenticator response")
+	}
+	if !r.Response.Success {
 		return errors.New("steam returned success false")
 	}
 
@@ -172,8 +175,11 @@ func (a *SteamGuardAccount) RefreshSession() error {
 	if err = json.Unmarshal(respBody, &r); err != nil {
 		return err
 	}
-	if r.Response == nil || r.Response.Token == "" {
-		return errors.New("malformed response")
+	if r.Response == nil {
+		return errors.New("steam returned empty refresh session data response")
+	}
+	if r.Response.Token == "" {
+		return errors.New("steam returned empty token")
 	}
 
 	stringSteamID := strconv.FormatUint(a.Session.SteamID, 10)

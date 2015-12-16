@@ -93,7 +93,7 @@ func (al *AuthenticatorLinker) AddAuthenticator() error {
 		return err
 	}
 	if r.Response == nil {
-		return errors.New("malformed json response")
+		return errors.New("steam returned empty add authenticator response")
 	}
 	if r.Response.Status == 29 {
 		return ErrAuthenticatorPresent
@@ -144,7 +144,7 @@ func (al *AuthenticatorLinker) FinalizeAddAuthenticator(smsCode string) error {
 		}
 
 		if r.Response == nil {
-			return errors.New("malformed json response")
+			return errors.New("steam returned empty finalize authenticator response")
 		}
 
 		if r.Response.Status == 89 {
