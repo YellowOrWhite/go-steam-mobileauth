@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http/cookiejar"
 	"net/url"
 	"regexp"
@@ -109,7 +110,10 @@ func (a *SteamGuardAccount) GenerateSteamGuardCodeForTime(t int64) (string, erro
 }
 
 func (a *SteamGuardAccount) FetchConfirmations() ([]*Confirmation, error) {
-	queryParams := a.GenerateConfirmationQueryParams("conf")
+	queryParams, err := a.GenerateConfirmationQueryParams("conf")
+	if err != nil {
+		return nil, fmt.Errorf("failed to generated confirmation query params: %v", err)
+	}
 
 	cookies, _ := cookiejar.New(nil)
 	a.Session.AddCookies(cookies)
@@ -193,7 +197,10 @@ func (a *SteamGuardAccount) RefreshSession() error {
 }
 
 func (a *SteamGuardAccount) _sendConfirmationAjax(cn *Confirmation, op string) error {
-	queryParams := a.GenerateConfirmationQueryParams(op)
+	queryParams, err := a.GenerateConfirmationQueryParams(op)
+	if err != nil {
+		return fmt.Errorf("failed to generated confirmation query params: %v", err)
+	}
 	queryParams.Set("op", op)
 	queryParams.Set("cid", cn.ConfirmationID)
 	queryParams.Set("ck", cn.ConfirmationKey)
@@ -219,9 +226,9 @@ func (a *SteamGuardAccount) _sendConfirmationAjax(cn *Confirmation, op string) e
 	return nil
 }
 
-func (a *SteamGuardAccount) GenerateConfirmationQueryParams(tag string) url.Values {
+func (a *SteamGuardAccount) GenerateConfirmationQueryParams(tag string) (url.Values, error) {
 	if a.DeviceID == "" {
-		a.DeviceID = generateDeviceID()
+		return nil, errors.New("Device ID is empty")
 	}
 	t := GetSteamTime()
 	queryParams := url.Values{}
@@ -231,7 +238,7 @@ func (a *SteamGuardAccount) GenerateConfirmationQueryParams(tag string) url.Valu
 	queryParams.Set("t", strconv.FormatInt(t, 10))
 	queryParams.Set("m", "android")
 	queryParams.Set("tag", tag)
-	return queryParams
+	return queryParams, nil
 }
 
 func (a *SteamGuardAccount) _generateConfirmationHashForTime(t int64, tag string) string {
