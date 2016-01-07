@@ -129,6 +129,9 @@ func (a *SteamGuardAccount) FetchConfirmations() ([]*Confirmation, error) {
 	if strings.Contains(respString, "<div>Nothing to confirm</div>") {
 		return nil, nil
 	}
+	if strings.Contains(respString, "<div>There was a problem loading the confirmations page. Please try your request again later.</div>") {
+		return nil, errors.New("steam failed to return confirmations page, try again later")
+	}
 
 	// Try to parse response
 	confIDs := confIDRegex.FindAllStringSubmatch(respString, -1)
